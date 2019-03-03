@@ -80,6 +80,32 @@ function resetNormalCamera()
 	SetEntityCollision(playerPed, true, true)
 	SetEntityVisible(playerPed, true)
 	SetEntityCoords(playerPed, LastPosition.x, LastPosition.y, LastPosition.z)
+	ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin, jobSkin)
+          local model = nil
+
+          if skin.sex == 0 then
+            model = GetHashKey("mp_m_freemode_01")
+          else
+            model = GetHashKey("mp_f_freemode_01")
+          end
+
+          RequestModel(model)
+          while not HasModelLoaded(model) do
+            RequestModel(model)
+            Citizen.Wait(1)
+          end
+
+          SetPlayerModel(PlayerId(), model)
+          SetModelAsNoLongerNeeded(model)
+
+          TriggerEvent('skinchanger:loadSkin', skin)
+          TriggerEvent('esx:restoreLoadout')
+          local playerPed = GetPlayerPed(-1)
+          SetPedArmour(playerPed, 0)
+          ClearPedBloodDamage(playerPed)
+          ResetPedVisibleDamage(playerPed)
+          ClearPedLastWeaponDamage(playerPed)
+		  end)
 end
 
 function getPlayersList()
